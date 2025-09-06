@@ -14,10 +14,9 @@ use crossterm::{
 };
 use reqwest::blocking::get;
 
-// Helper: Print a colored message with optional clearing
 pub fn print_message(message: &str, status: &str, clear: bool) {
     let (width, _) = size().unwrap_or((80, 24));
-    let len = width.saturating_sub(message.len() as u16 + status.len() as u16 + 7);
+    let len = width.saturating_sub(message.len() as u16 + status.len() as u16 + 5);
     let msg = format!(
         "{} {}{} {}{}{}",
         "*".green().bold(),
