@@ -4,4 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+chrono = "0.4.41"
+rocket = { version = "0.5.1", features = ["json", "secrets", "serde_json", "tls"] }
+rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }
 serde = { version = "1.0.219", features = ["derive"] }
+slug = "0.1.6"
