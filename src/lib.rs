@@ -148,7 +148,6 @@ pub mod render {
     pub mod funcs;
     pub mod helpers;
     pub mod jsonld;
-    pub mod ui;
 
     #[derive(RustEmbed)]
     #[folder = "templates/"]
@@ -180,7 +179,6 @@ pub mod render {
                 tera.register_function("csrf_input", helpers::csrf_input);
                 tera.register_function("active_link", helpers::active_link);
                 tera.register_function("paginate", helpers::paginate);
-
 
                 // Filtres
                 tera.register_filter("markdown", filters::markdown);

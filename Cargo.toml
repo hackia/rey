@@ -2,6 +2,12 @@
 name = "rey"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/hackiado/rey"
+authors = ["Seido <seido@hackiado.com>"]
+keywords = ["blog", "static site generator", "markdown", "rust"]
+description = "A static site generator for blogs, powered by Rust."
+license = "AGPL-3.0"
+readme = "README.md"
 
 [dependencies]
 chrono = "0.4.41"
