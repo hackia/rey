@@ -1,6 +1,7 @@
 use std::{
     fs::{File, create_dir_all, remove_dir_all},
     io::Write,
+    process::Stdio,
 };
 use tabled::{builder::Builder, settings::Style};
 
@@ -54,12 +55,19 @@ pub fn init() -> Result<(), std::io::Error> {
     ok_command(
         "Initializing typescript project...",
         false,
-        std::process::Command::new("tsc").arg("--init"),
+        std::process::Command::new("tsc")
+            .arg("--init")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null()),
     );
     ok_command(
         "Initializing npm project...",
         false,
-        std::process::Command::new("npm").arg("init").arg("-y"),
+        std::process::Command::new("npm")
+            .arg("init")
+            .arg("-y")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null()),
     );
     ok_command(
         "initializing project...",
