@@ -1,4 +1,5 @@
-use crate::console::views::admin::{ok_clear, ok_command};
+use crate::console::views::admin::{ok_clear, ok_command, ok_download};
+use std::io::Error;
 
 pub struct Question;
 
@@ -74,6 +75,125 @@ impl Question {
     }
 }
 
+pub enum Licenses {
+    MIT,
+    Apache2,
+    GPL3,
+    BSD3,
+    Unlicense,
+    MPL2,
+    AGPL3,
+    LGPL3,
+    Artistic2,
+    CC0,
+    EUPL1_2,
+    Zlib,
+    None,
+}
+impl Licenses {
+    pub fn variants() -> Vec<String> {
+        vec![
+            "MIT".to_string(),
+            "Apache-2.0".to_string(),
+            "GPL-3.0".to_string(),
+            "BSD-3-Clause".to_string(),
+            "Unlicense".to_string(),
+            "MPL-2.0".to_string(),
+            "AGPL-3.0".to_string(),
+            "LGPL-3.0".to_string(),
+            "Artistic-2.0".to_string(),
+            "CC0-1.0".to_string(),
+            "EUPL-1.2".to_string(),
+            "Zlib".to_string(),
+            "None".to_string(),
+        ]
+    }
+    pub fn from_str(s: &str) -> Self {
+        match s {
+            "MIT" => Licenses::MIT,
+            "Apache-2.0" => Licenses::Apache2,
+            "GPL-3.0" => Licenses::GPL3,
+            "BSD-3-Clause" => Licenses::BSD3,
+            "Unlicense" => Licenses::Unlicense,
+            "MPL-2.0" => Licenses::MPL2,
+            "AGPL-3.0" => Licenses::AGPL3,
+            "LGPL-3.0" => Licenses::LGPL3,
+            "Artistic-2.0" => Licenses::Artistic2,
+            "CC0-1.0" => Licenses::CC0,
+            "EUPL-1.2" => Licenses::EUPL1_2,
+            "Zlib" => Licenses::Zlib,
+            _ => Licenses::None,
+        }
+    }
+
+    pub fn to_str(&self) -> &str {
+        match self {
+            Licenses::MIT => "MIT",
+            Licenses::Apache2 => "Apache-2.0",
+            Licenses::GPL3 => "GPL-3.0",
+            Licenses::BSD3 => "BSD-3-Clause",
+            Licenses::Unlicense => "Unlicense",
+            Licenses::MPL2 => "MPL-2.0",
+            Licenses::AGPL3 => "AGPL-3.0",
+            Licenses::LGPL3 => "LGPL-3.0",
+            Licenses::Artistic2 => "Artistic-2.0",
+            Licenses::CC0 => "CC0-1.0",
+            Licenses::EUPL1_2 => "EUPL-1.2",
+            Licenses::Zlib => "Zlib",
+            Licenses::None => "None",
+        }
+    }
+    pub fn download(&self) -> Result<(), Error> {
+        if let Some(uri) = match self {
+            Licenses::MIT => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/MIT")
+            }
+            Licenses::Apache2 => Some(
+                "https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Apache-2.0",
+            ),
+            Licenses::GPL3 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/GPL-3.0")
+            }
+            Licenses::BSD3 => Some(
+                "https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/BSD-3-Clause",
+            ),
+            Licenses::Unlicense => Some(
+                "https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Unlicense",
+            ),
+            Licenses::MPL2 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/MPL-2.0")
+            }
+            Licenses::AGPL3 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/AGPL_V3")
+            }
+            Licenses::LGPL3 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/LGPL-3.0")
+            }
+            Licenses::Artistic2 => Some(
+                "https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Artistic-2.0",
+            ),
+            Licenses::CC0 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/CC0-1.0")
+            }
+            Licenses::EUPL1_2 => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/EUPL-1.2")
+            }
+            Licenses::Zlib => Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Zlib"),
+            Licenses::None => None,
+        } {
+            if ok_download(uri, "LICENSE").is_ok() {
+                ok_clear("License file downloaded.", false);
+                Ok(())
+            } else {
+                ok_clear("Failed to download license file.", false);
+                return Err(Error::other("Failed to download license file."));
+            }
+        } else {
+            ok_clear("No license selected.", false);
+            Ok(())
+        }
+    }
+}
 pub struct Commit;
 
 impl Commit {
@@ -99,6 +219,26 @@ impl Commit {
         })
     }
 
+    /// Executes `hg commit` and `hg push` commands and shows status messages.
+    pub fn commit_and_push() -> bool {
+        ok_command(
+            "committing changes",
+            false,
+            std::process::Command::new("hg")
+                .arg("commit")
+                .arg("-m")
+                .arg(
+                    Question::editor("Commit message:", Some("enter commit message"))
+                        .unwrap_or_else(|_| panic!("Commit message is required.")),
+                ),
+        );
+        ok_command(
+            "sending push request",
+            false,
+            std::process::Command::new("hg").arg("push"),
+        );
+        true
+    }
     /// Executes `hg push` command and shows status message.
     pub fn push() -> bool {
         ok_command(
