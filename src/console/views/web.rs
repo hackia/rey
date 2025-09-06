@@ -75,7 +75,9 @@ pub fn init() -> Result<(), std::io::Error> {
         std::process::Command::new("cargo")
             .arg("init")
             .arg("--vcs")
-            .arg("hg"),
+            .arg("hg")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null()),
     );
     Ok(())
 }
