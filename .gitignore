@@ -1,8 +1,18 @@
-/target
-
-
 # Added by cargo
 #
 # already existing elements were commented out
 
-#/target
+/target
+Cargo.lock
+.hg
+.idea
+.vscode
+
+# By default, ignore all hidden files and directories (those starting with a dot)
+.env
+front/
+templates/
+package.json
+tsconfig.json
+.hgignore
+Rocket.toml

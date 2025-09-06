@@ -154,7 +154,7 @@ pub mod render {
     struct KitTemplates;
 
     #[derive(RustEmbed)]
-    #[folder = "assets/"]
+    #[folder = "front/"]
     struct KitAssets;
 
     pub fn attach() -> AdHoc {
