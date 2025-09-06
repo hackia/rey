@@ -24,7 +24,7 @@ impl Console {
         {
             ok_clear("initializing project...", false);
             init_all().expect("failed to initialize project");
-            ok_clear("project initialized successfully!", true);
+            ok_clear("project initialized successfully!", false);
         } else {
             ok_clear("project initialization cancelled", false);
         }

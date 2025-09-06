@@ -30,7 +30,7 @@ fn main() {
             Console::watch();
         }
         _ => {
-            println!("No valid subcommand was used. Use --help for more information.");
+            println!("No valid subcommand was used. Use --help for more information."); 
         }
     }
 }
