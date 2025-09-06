@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+pub mod console;
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Seo {
     /// Title (~60 chars)
@@ -129,5 +130,100 @@ impl Seo {
     pub fn twitter_summary(&mut self) -> &mut Self {
         self.twitter_card.replace("summary".to_string());
         self
+    }
+}
+
+///
+/// Module `render` provides functionality for integrating Tera templates with Rocket,
+/// including custom filters and functions, as well as handling embedded assets using RustEmbed.
+/// It sets up the templating engine, registers various utilities for content rendering,
+/// and ensures that static assets are served correctly.
+///     
+pub mod render {
+    use rocket::fairing::AdHoc;
+    use rocket_dyn_templates::tera::Tera;
+    use rust_embed::RustEmbed;
+
+    pub mod filters;
+    pub mod funcs;
+    pub mod helpers;
+    pub mod jsonld;
+    pub mod ui;
+
+    #[derive(RustEmbed)]
+    #[folder = "templates/"]
+    struct KitTemplates;
+
+    #[derive(RustEmbed)]
+    #[folder = "assets/"]
+    struct KitAssets;
+
+    pub fn attach() -> AdHoc {
+        AdHoc::on_ignite("roots_kit", |rocket| async {
+            let rocket = rocket.attach(rocket_dyn_templates::Template::custom(|engines| {
+                let tera: &mut Tera = &mut engines.tera;
+
+                // Charger les templates embarqués
+                for file in KitTemplates::iter() {
+                    let path = file.as_ref();
+                    if let Some(content) = KitTemplates::get(path) {
+                        let s = std::str::from_utf8(content.data.as_ref()).unwrap();
+                        tera.add_raw_template(path, s).expect(path);
+                    }
+                }
+
+                tera.register_function("num_format", helpers::num_format);
+                tera.register_function("money_eur", helpers::money_eur);
+                tera.register_function("percent", helpers::percent);
+                tera.register_function("safe_url", helpers::safe_url);
+                tera.register_function("external_rel", helpers::external_rel);
+                tera.register_function("csrf_input", helpers::csrf_input);
+                tera.register_function("active_link", helpers::active_link);
+                tera.register_function("paginate", helpers::paginate);
+
+
+                // Filtres
+                tera.register_filter("markdown", filters::markdown);
+                tera.register_filter("md_excerpt", filters::md_excerpt);
+                tera.register_filter("date", filters::date);
+                tera.register_filter("ago", filters::ago);
+                tera.register_filter("truncate", filters::truncate);
+                tera.register_filter("slugify", filters::slugify);
+                tera.register_filter("nl2br", filters::nl2br);
+                tera.register_filter("json", filters::json_pp);
+
+                // Fonctions
+                tera.register_function("asset", funcs::asset);
+                tera.register_function("asset_tag", funcs::asset_tag);
+                tera.register_function("img_srcset", funcs::img_srcset);
+                tera.register_function("picture", funcs::picture);
+                tera.register_function("canonical", funcs::canonical);
+            }));
+
+            // Exposer assets (roots.css, icons.svg)
+            let rocket = rocket
+                .mount(
+                    "/kit",
+                    rocket::fs::FileServer::from("target/roots_kit_assets"),
+                )
+                .attach(AdHoc::on_liftoff("extract_assets", |_| {
+                    Box::pin(async {
+                        // à la liftoff, on écrit les assets embarqués sur disque (ou servez via route custom)
+                        use std::{fs, path::Path};
+                        let out = "target/roots_kit_assets";
+                        fs::create_dir_all(out).ok();
+                        for f in KitAssets::iter() {
+                            let path = format!("{out}/{}", f.as_ref());
+                            if let Some(content) = KitAssets::get(f.as_ref()) {
+                                if let Some(parent) = Path::new(&path).parent() {
+                                    fs::create_dir_all(parent).ok();
+                                }
+                                fs::write(path, content.data.as_ref()).ok();
+                            }
+                        }
+                    })
+                }));
+            rocket
+        })
     }
 }
