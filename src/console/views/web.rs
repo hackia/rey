@@ -61,7 +61,7 @@ pub fn remove_web(name: &str) -> Result<(), std::io::Error> {
     }
     Ok(())
 }
-
+/// Rename all files associated with a web view, including template, asset, script, and test files.
 pub fn rename_web(old: &str, new: &str) -> Result<(), std::io::Error> {
     let old_tpl = format!("templates/web/{old}.html.tera");
     let new_tpl = format!("templates/web/{new}.html.tera");
@@ -108,7 +108,7 @@ pub fn list_web() -> Result<Vec<String>, std::io::Error> {
     }
     Ok(views)
 }
-
+/// Print all web view templates in a table format.
 pub fn print_web_templates() {
     match list_web() {
         Ok(templates) => {
@@ -157,7 +157,6 @@ pub fn web_exists(name: &str) -> bool {
         && script_web_exists(name)
         && test_web_exists(name)
 }
-
 
 /// Generate a template file for the admin view.
 pub fn generate_admin_view(name: &str) -> Result<(), std::io::Error> {
@@ -220,7 +219,7 @@ pub fn remove_admin(name: &str) -> Result<(), std::io::Error> {
     }
     Ok(())
 }
-
+/// Rename all files associated with a admin view, including template, asset, script, and test files.
 pub fn rename_admin(old: &str, new: &str) -> Result<(), std::io::Error> {
     let old_tpl = format!("templates/admin/{old}.html.tera");
     let new_tpl = format!("templates/admin/{new}.html.tera");
@@ -267,7 +266,7 @@ pub fn list_admin() -> Result<Vec<String>, std::io::Error> {
     }
     Ok(views)
 }
-
+/// Print all admin view templates in a table format.
 pub fn print_admin_templates() {
     match list_admin() {
         Ok(templates) => {
