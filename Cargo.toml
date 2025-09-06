@@ -34,3 +34,4 @@ reqwest = { version = "0.12.23", features = ["json", "blocking", "rustls-tls"] }
 inquire = { version = "0.7.5", features = ["console", "date", "editor"] }
 crossterm = "0.29.0"
 tabled = "0.20.0"
+clap = "4.5.47"

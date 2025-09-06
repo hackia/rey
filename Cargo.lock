@@ -2665,6 +2665,7 @@ name = "rey"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "clap",
  "comrak",
  "crossterm 0.29.0",
  "emoji",
