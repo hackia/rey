@@ -1,8 +1,7 @@
 // helpers.rs
-use std::collections::HashMap;
-use serde_json::{Value, to_value};
 use rocket_dyn_templates::tera;
-
+use serde_json::{Value, to_value};
+use std::collections::HashMap;
 
 pub fn num_format(args: &HashMap<String, Value>) -> tera::Result<Value> {
     let n = args.get("n").and_then(|v| v.as_f64()).unwrap_or(0.0);

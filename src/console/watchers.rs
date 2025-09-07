@@ -31,9 +31,10 @@ fn is_ignored_dir(path: &Path) -> bool {
 
 fn is_ignored_file(path: &Path) -> bool {
     if let Some(name) = path.file_name().and_then(|s| s.to_str())
-        && (name.ends_with('~') || name == "tsconfig.tsbuildinfo") {
-            return true;
-        }
+        && (name.ends_with('~') || name == "tsconfig.tsbuildinfo")
+    {
+        return true;
+    }
     match path
         .extension()
         .and_then(|s| s.to_str())
@@ -57,7 +58,7 @@ fn is_watched_source(path: &Path) -> bool {
 
 pub fn watch() -> Result<(), Box<dyn std::error::Error>> {
     ok_clear("Watching changes...", true);
-    
+
     let mut child = Some(spawn_server());
     let mut last_restart = Instant::now() - Duration::from_secs(10);
 

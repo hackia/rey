@@ -199,7 +199,7 @@ pub mod render {
             }));
 
             // Exposer assets (roots.css, icons.svg)
-            
+
             rocket
                 .mount(
                     "/kit",

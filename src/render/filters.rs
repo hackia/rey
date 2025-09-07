@@ -1,8 +1,8 @@
 use chrono::{DateTime, Utc};
 use comrak::{ComrakOptions, markdown_to_html};
 use rocket_dyn_templates::tera;
-use rocket_dyn_templates::tera::Value;
 use rocket_dyn_templates::tera::Result as TeraResult;
+use rocket_dyn_templates::tera::Value;
 use rocket_dyn_templates::tera::to_value;
 
 pub fn markdown(value: &Value, _: &std::collections::HashMap<String, Value>) -> TeraResult<Value> {
@@ -43,10 +43,7 @@ pub fn date(value: &Value, args: &std::collections::HashMap<String, Value>) -> T
     Ok(to_value(dt.format(fmt).to_string()).unwrap())
 }
 
-pub fn ago(
-    value: &Value,
-    _args: &std::collections::HashMap<String, Value>,
-) -> TeraResult<Value> {
+pub fn ago(value: &Value, _args: &std::collections::HashMap<String, Value>) -> TeraResult<Value> {
     let s = value.as_str().unwrap_or_default();
     let then: DateTime<Utc> = s.parse().unwrap_or_else(|_| Utc::now());
     let sec = (Utc::now() - then).num_seconds();

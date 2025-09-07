@@ -178,7 +178,9 @@ impl Licenses {
             Licenses::EUPL1_2 => {
                 Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/EUPL-1.2")
             }
-            Licenses::Zlib => Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Zlib"),
+            Licenses::Zlib => {
+                Some("https://raw.githubusercontent.com/hackiado/licenses/refs/heads/main/Zlib")
+            }
             Licenses::None => None,
         } {
             if ok_download(uri, "LICENSE").is_ok() {

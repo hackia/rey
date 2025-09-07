@@ -7,9 +7,7 @@ use std::{
 };
 use tabled::{builder::Builder, settings::Style};
 
-use crate::console::{
-    views::admin::{ok_clear, ok_command},
-};
+use crate::console::views::admin::{ok_clear, ok_command};
 
 pub const WEB_MAIN: &str = "./front/web";
 pub const ADMIN_MAIN: &str = "./front/admin";
@@ -29,7 +27,6 @@ pub const VIEW_EXT: &str = "html.tera";
 pub const ASSETS_EXT: &str = "scss";
 pub const SCRIPTS_EXT: &str = "ts";
 pub const TESTS_EXT: &str = ".tests.ts";
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ViewType {
@@ -638,12 +635,13 @@ pub fn list_web() -> Result<Vec<String>, std::io::Error> {
         let path = entry.path();
         if path.is_file()
             && let Some(ext) = path.extension()
-                && ext == "tera"
-                    && let Some(stem) = path.file_stem()
-                        && let Some(stem_str) = stem.to_str() {
-                            let name = stem_str.trim_end_matches(".html");
-                            views.push(name.to_string());
-                        }
+            && ext == "tera"
+            && let Some(stem) = path.file_stem()
+            && let Some(stem_str) = stem.to_str()
+        {
+            let name = stem_str.trim_end_matches(".html");
+            views.push(name.to_string());
+        }
     }
     Ok(views)
 }
@@ -781,12 +779,13 @@ pub fn list_admin() -> Result<Vec<String>, std::io::Error> {
         let path = entry.path();
         if path.is_file()
             && let Some(ext) = path.extension()
-                && ext == "tera"
-                    && let Some(stem) = path.file_stem()
-                        && let Some(stem_str) = stem.to_str() {
-                            let name = stem_str.trim_end_matches(".html");
-                            views.push(name.to_string());
-                        }
+            && ext == "tera"
+            && let Some(stem) = path.file_stem()
+            && let Some(stem_str) = stem.to_str()
+        {
+            let name = stem_str.trim_end_matches(".html");
+            views.push(name.to_string());
+        }
     }
     Ok(views)
 }
