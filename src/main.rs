@@ -1,4 +1,4 @@
-use clap::{ArgMatches, Command};
+use clap::{Arg, ArgMatches, Command, builder::PossibleValuesParser};
 use rey::console::Console;
 
 pub mod console;
@@ -13,7 +13,23 @@ fn rey() -> ArgMatches {
         .subcommand(Command::new("serve").about("Serve the project"))
         .subcommand(Command::new("watch").about("Watch the project"))
         .subcommand(Command::new("scan").about("Scan rey projects"))
-        .subcommand(Command::new("edit").about("Edit Rocket.toml config"))
+        .subcommand(
+            Command::new("edit").about("Edit Rocket.toml config").arg(
+                Arg::new("file")
+                    .help("File to edit")
+                    .long("if")
+                    .short('f')
+                    .value_parser(PossibleValuesParser::new([
+                        "Rocket.toml",
+                        "Cargo.toml",
+                        "package.json",
+                        "tsconfig.json",
+                    ]))
+                    .default_missing_value("Rocket.toml")
+                    .default_value("Rocket.toml")
+                    .required(false),
+            ),
+        )
         .get_matches()
 }
 fn main() {
