@@ -4,7 +4,10 @@ use crate::console::{
     prompts::Question,
     views::{
         admin::{ok_clear, ok_command},
-        web::{generate_admin, generate_admin_view, generate_web, generate_web_view, init_all},
+        web::{
+            generate_admin, generate_admin_view, generate_web, generate_web_view, init_all,
+            is_initialized,
+        },
     },
 };
 
@@ -15,6 +18,12 @@ pub struct Console;
 
 impl Console {
     pub fn init() {
+        if is_initialized() {
+            ok_clear("Project is already initialized.", false);
+            return;
+        } else {
+            ok_clear("Initialization of project", false);
+        }
         if Question::confirm(
             "Do you want to create a new project in the current directory?",
             Some("y"),
@@ -71,6 +80,24 @@ impl Console {
             }
             if std::path::Path::new("tests/").exists() {
                 remove_dir_all("tests/").expect("failed to remove tests directory");
+            }
+            if std::path::Path::new("static/").exists() {
+                remove_dir_all("static/").expect("failed to remove static directory");
+            }
+            if std::path::Path::new("target/").exists() {
+                remove_dir_all("target/").expect("failed to remove target directory");
+            }
+            if std::path::Path::new("Cargo.lock").exists() {
+                remove_file("Cargo.lock").expect("failed to remove Cargo.lock");
+            }
+            if std::path::Path::new("node_modules/").exists() {
+                remove_dir_all("node_modules/").expect("failed to remove node_modules directory");
+            }
+            if std::path::Path::new("yarn.lock").exists() {
+                remove_file("yarn.lock").expect("failed to remove yarn.lock");
+            }
+            if std::path::Path::new("pnpm-lock.yaml").exists() {
+                remove_file("pnpm-lock.yaml").expect("failed to remove pnpm-lock.yaml");
             }
             ok_clear("existing project files removed!", false);
         } else {
