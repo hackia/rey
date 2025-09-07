@@ -15,6 +15,7 @@ pub mod serve;
 pub mod views;
 pub mod watch;
 pub mod watchers;
+pub mod generate;
 
 #[derive(Subcommand)]
 pub enum Commands {
@@ -25,4 +26,4 @@ pub enum Commands {
     Scan(scan::Scan),
     Watch(watch::Watch),
     Serve(serve::Serve),
-}
+    Generate(generate::Generate),}

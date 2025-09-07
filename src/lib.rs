@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-
 pub mod console;
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Seo {

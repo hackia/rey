@@ -41,3 +41,6 @@ notify = "8.2.0"
 notify-debouncer-mini = { version = "0.7.0", features = ["serialization-compat-6"] }
 anyhow = "1.0.99"
 ctrlc = { version = "3.5.0", features = ["termination"] }
+rayon = "1.11.0"
+num_cpus = "1.17.0"
+tokio = { version = "1.47.1", features = ["full"] }

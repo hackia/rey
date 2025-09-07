@@ -18,6 +18,7 @@ impl Shell for Cli {
             Commands::Scan(cmd) => cmd.run(),
             Commands::Watch(cmd) => cmd.run(),
             Commands::Serve(cmd) => cmd.run(),
+            Commands::Generate(cmd) => cmd.run(),
         }
     }
 }
