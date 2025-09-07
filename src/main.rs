@@ -13,6 +13,7 @@ fn rey() -> ArgMatches {
         .subcommand(Command::new("serve").about("Serve the project"))
         .subcommand(Command::new("watch").about("Watch the project"))
         .subcommand(Command::new("scan").about("Scan rey projects"))
+        .subcommand(Command::new("edit").about("Edit Rocket.toml config"))
         .get_matches()
 }
 fn main() {
@@ -32,6 +33,9 @@ fn main() {
         }
         Some(("scan", _)) => {
             Console::scan();
+        }
+        Some(("edit", _)) => {
+            Console::edit();
         }
         _ => {
             println!("No valid subcommand was used. Use --help for more information.");

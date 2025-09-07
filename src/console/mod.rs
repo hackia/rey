@@ -3,6 +3,8 @@ use std::{
     path::Path,
 };
 
+use inquire::Editor;
+
 use crate::console::{
     prompts::Question,
     views::{
@@ -45,6 +47,24 @@ impl Console {
         } else {
             ok_clear("project initialization cancelled", false);
         }
+    }
+
+    pub fn edit() {
+        use std::fs;
+
+        let config_path = "Rocket.toml";
+        let initial_text = fs::read_to_string(config_path).unwrap_or_default();
+
+        let edited = Editor::new("Edit Rocket.toml configuration")
+            .with_help_message(
+                "Edit the Rocket.toml configuration file. Save and exit to apply changes.",
+            )
+            .with_predefined_text(&initial_text)
+            .prompt()
+            .expect("failed to edit Rocket.toml");
+
+        fs::write(config_path, edited).expect("failed to write Rocket.toml");
+        ok_clear("Rocket.toml updated successfully!", false);
     }
 
     pub fn clean() {
