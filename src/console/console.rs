@@ -3,7 +3,7 @@ use crate::console::{
     views::{
         admin::{ok_clear, ok_command},
         web::{
-            generate_admin, generate_admin_view, generate_web, generate_web_view, init_all,
+            generate_admin, generate_admin_view, generate_web, generate_web_view, init, init_all,
             is_initialized, scan,
         },
     },
@@ -262,6 +262,7 @@ impl Capsule {
             true,
             Command::new("cargo").args(["init", "--name", proj, "--bin", "--vcs", "hg", proj]),
         );
+        init(&proj).expect("failed to initialize project structure");
         ok_clear("Project structure generated!", false);
         Ok(())
     }

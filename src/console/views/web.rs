@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use std::{
     collections::HashMap,
+    env::current_dir,
     fs::{File, create_dir_all, read_to_string, remove_dir_all},
     io::Write,
     process::Stdio,
@@ -9,20 +10,20 @@ use tabled::{builder::Builder, settings::Style};
 
 use crate::console::views::admin::{ok_clear, ok_command};
 
-pub const WEB_MAIN: &str = "./front/web";
-pub const ADMIN_MAIN: &str = "./front/admin";
-pub const WEB_TEMPLATES: &str = "./templates/web";
-pub const ADMIN_TEMPLATES: &str = "./templates/admin";
-pub const ASSETS_WEB: &str = "./front/web/scss";
-pub const ASSETS_ADMIN: &str = "./front/admin/scss";
-pub const SCRIPTS_WEB: &str = "./front/web/ts";
-pub const SCRIPTS_ADMIN: &str = "./front/admin/ts";
-pub const TESTS_WEB: &str = "./front/web/tests";
-pub const TESTS_ADMIN: &str = "./front/admin/tests";
-pub const TESTS_UNIT: &str = "./tests/unit";
-pub const TESTS_INTEGRATION: &str = "./tests/integration";
-pub const TESTS_E2E: &str = "./tests/e2e";
-pub const TESTS_BENCHMARK: &str = "./tests/benchmark";
+pub const WEB_MAIN: &str = "front/web";
+pub const ADMIN_MAIN: &str = "front/admin";
+pub const WEB_TEMPLATES: &str = "templates/web";
+pub const ADMIN_TEMPLATES: &str = "templates/admin";
+pub const ASSETS_WEB: &str = "front/web/scss";
+pub const ASSETS_ADMIN: &str = "front/admin/scss";
+pub const SCRIPTS_WEB: &str = "front/web/ts";
+pub const SCRIPTS_ADMIN: &str = "front/admin/ts";
+pub const TESTS_WEB: &str = "front/web/tests";
+pub const TESTS_ADMIN: &str = "front/admin/tests";
+pub const TESTS_UNIT: &str = "tests/unit";
+pub const TESTS_INTEGRATION: &str = "tests/integration";
+pub const TESTS_E2E: &str = "tests/e2e";
+pub const TESTS_BENCHMARK: &str = "tests/benchmark";
 pub const VIEW_EXT: &str = "html.tera";
 pub const ASSETS_EXT: &str = "scss";
 pub const SCRIPTS_EXT: &str = "ts";
@@ -34,14 +35,14 @@ pub enum ViewType {
     Admin,
 }
 
-pub fn generate_scss_and_ts_base(view: ViewType) -> Result<(), std::io::Error> {
+pub fn generate_scss_and_ts_base(view: ViewType, proj: &str) -> Result<(), std::io::Error> {
     let dir = match view {
         ViewType::Web => "web",
         ViewType::Admin => "admin",
     };
 
-    let scss_path = format!("./front/{dir}/scss");
-    let ts_path = format!("./front/{dir}/ts");
+    let scss_path = format!("{proj}/front/{dir}/scss");
+    let ts_path = format!("{proj}/front/{dir}/ts");
 
     create_dir_all(&scss_path)?;
     create_dir_all(&ts_path)?;
@@ -251,10 +252,10 @@ pub fn scan() {
     println!("{}", table);
 }
 
-pub fn generate_main_rs() -> std::io::Result<()> {
+pub fn generate_main_rs(proj: &str) -> std::io::Result<()> {
     create_dir_all("src")?;
     create_dir_all("public")?;
-    let mut f = File::create("src/main.rs")?;
+    let mut f = File::create(format!("{proj}/src/main.rs"))?;
 
     let main_rs = r#"
 use rocket::{get, routes, serde::json::Json, fs::FileServer, Request, catch, catchers};
@@ -340,34 +341,44 @@ async fn main() -> Result<(), rocket::Error> {
     Ok(())
 }
 
-pub fn init() -> Result<(), std::io::Error> {
+use std::path::MAIN_SEPARATOR_STR;
+pub fn init(proj: &str) -> Result<(), std::io::Error> {
     ok_clear("Initializing project...", true);
-    create_dir_all(WEB_MAIN)?;
-    create_dir_all(ADMIN_MAIN)?;
-    create_dir_all(WEB_TEMPLATES)?;
-    create_dir_all(ASSETS_WEB)?;
-    create_dir_all(SCRIPTS_WEB)?;
-    create_dir_all(TESTS_WEB)?;
-    create_dir_all(ADMIN_TEMPLATES)?;
-    create_dir_all(ASSETS_ADMIN)?;
-    create_dir_all(SCRIPTS_ADMIN)?;
-    create_dir_all(TESTS_ADMIN)?;
-    create_dir_all(TESTS_INTEGRATION)?;
-    create_dir_all(TESTS_E2E)?;
-    create_dir_all(TESTS_UNIT)?;
-    create_dir_all(TESTS_BENCHMARK)?;
-    create_dir_all("public")?;
-    create_dir_all("public/css")?;
-    create_dir_all("public/js")?;
-    create_dir_all("public/img")?;
-    create_dir_all("public/fonts")?;
-    create_dir_all("logs")?;
-    generate_scss_and_ts_base(ViewType::Web)?;
-    generate_scss_and_ts_base(ViewType::Admin)?;
 
-    let mut rocket_toml = File::create("Rocket.toml")?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{WEB_MAIN}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{ADMIN_MAIN}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{WEB_TEMPLATES}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{ASSETS_WEB}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{SCRIPTS_WEB}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_WEB}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{ADMIN_TEMPLATES}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{ASSETS_ADMIN}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{SCRIPTS_ADMIN}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_ADMIN}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_INTEGRATION}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_E2E}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_UNIT}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{TESTS_BENCHMARK}"))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}public"))?;
+    create_dir_all(format!(
+        "{proj}{MAIN_SEPARATOR_STR}public{MAIN_SEPARATOR_STR}css"
+    ))?;
+    create_dir_all(format!(
+        "{proj}{MAIN_SEPARATOR_STR}public{MAIN_SEPARATOR_STR}js"
+    ))?;
+    create_dir_all(format!(
+        "{proj}{MAIN_SEPARATOR_STR}public{MAIN_SEPARATOR_STR}img"
+    ))?;
+    create_dir_all(format!(
+        "{proj}{MAIN_SEPARATOR_STR}public{MAIN_SEPARATOR_STR}fonts"
+    ))?;
+    create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}logs"))?;
+    generate_scss_and_ts_base(ViewType::Web, proj)?;
+    generate_scss_and_ts_base(ViewType::Admin, proj)?;
 
-    let mut hgignore = File::create(".hgignore")?;
+    let mut rocket_toml = File::create(format!("{proj}{MAIN_SEPARATOR_STR}Rocket.toml"))?;
+
+    let mut hgignore = File::create(format!("{proj}{MAIN_SEPARATOR_STR}.hgignore"))?;
 
     hgignore.write_all(b"syntax: glob\n/target\n/node_modules\n/front/web/node_modules\n/front/admin/node_modules\n.DS_Store\n")?;
     hgignore.sync_all()?;
@@ -388,6 +399,7 @@ pub fn init() -> Result<(), std::io::Error> {
                 "--moduleResolution",
                 "Bundler",
             ])
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -397,6 +409,7 @@ pub fn init() -> Result<(), std::io::Error> {
         std::process::Command::new("npm")
             .arg("init")
             .arg("-y")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -407,10 +420,11 @@ pub fn init() -> Result<(), std::io::Error> {
             .arg("init")
             .arg("--vcs")
             .arg("hg")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
-    generate_main_rs()?;
+    generate_main_rs(proj)?;
     ok_command(
         "Adding Rocket and Tera dependencies...",
         false,
@@ -419,6 +433,7 @@ pub fn init() -> Result<(), std::io::Error> {
             .args(["rocket_dyn_templates"])
             .arg("--features")
             .arg("tera")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -430,6 +445,7 @@ pub fn init() -> Result<(), std::io::Error> {
             .args(["rocket"])
             .arg("--features")
             .arg("secrets,tls,json")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -441,6 +457,7 @@ pub fn init() -> Result<(), std::io::Error> {
             .args(["serde"])
             .arg("--features")
             .arg("derive")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -449,8 +466,10 @@ pub fn init() -> Result<(), std::io::Error> {
         false,
         std::process::Command::new("cargo")
             .arg("add")
-            .args(["serde_json"])
+            .arg("serde_json")
+            .arg("--features")
             .arg("derive")
+            .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
     );
@@ -465,12 +484,24 @@ pub fn again_init() {
         remove_dir_all("templates").expect("failed to remove templates directory");
         ok_clear("existing project files removed!", true);
         ok_clear("re-initializing project...", false);
-        init().expect("failed to re-initialize project");
+        init(
+            current_dir()
+                .expect("failed to get current directory")
+                .to_str()
+                .unwrap(),
+        )
+        .expect("failed to re-initialize project");
         ok_clear("project re-initialized successfully!", true);
     } else {
         ok_clear("project is not initialized yet.", false);
         ok_clear("initializing project...", false);
-        init().expect("failed to initialize project");
+        init(
+            current_dir()
+                .expect("failed to get current directory")
+                .to_str()
+                .unwrap(),
+        )
+        .expect("failed to initialize project");
         ok_clear("project initialized successfully!", true);
     }
 }
@@ -489,7 +520,12 @@ pub fn is_initialized() -> bool {
 }
 
 pub fn init_all() -> Result<(), std::io::Error> {
-    init()?;
+    init(
+        current_dir()
+            .expect("failed to get current directory")
+            .to_str()
+            .unwrap(),
+    )?;
     generate_web("index")?;
     generate_admin("dashboard")?;
     Ok(())
