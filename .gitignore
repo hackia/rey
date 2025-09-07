@@ -10,8 +10,6 @@ Cargo.lock
 
 # By default, ignore all hidden files and directories (those starting with a dot)
 .env
-front/
-templates/
 package.json
 tsconfig.json
 .hgignore
