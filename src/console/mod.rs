@@ -8,15 +8,15 @@ use crate::console::{
     views::{
         admin::{ok_clear, ok_command},
         web::{
-            generate_admin, generate_admin_view, generate_web, generate_web_view, init_all,
-            is_initialized, scan,
+            generate_admin,
+            generate_admin_view, generate_web, generate_web_view, init_all, is_initialized, scan,
         },
-    },
+    }, watchers::watch,
 };
 
 pub mod prompts;
 pub mod views;
-
+pub mod watchers;
 pub struct Console;
 
 impl Console {
@@ -169,10 +169,9 @@ impl Console {
         );
     }
 
-    pub fn watch() {
-        ok_clear("Watching for changes...", true);
-        Console::compile(["ts", "scss", "rs"]);
-        Console::serve();
+    pub fn watch() -> anyhow::Result<()> {
+        watch().expect("msg");
+        Ok(())
     }
 
     pub fn compile(extensions: [&str; 3]) {

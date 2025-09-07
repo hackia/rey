@@ -28,7 +28,7 @@ fn main() {
             Console::serve();
         }
         Some(("watch", _)) => {
-            Console::watch();
+            Console::watch().expect("Failed to watch files");
         }
         Some(("scan", _)) => {
             Console::scan();
