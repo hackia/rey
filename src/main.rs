@@ -50,8 +50,9 @@ fn main() {
         Some(("scan", _)) => {
             Console::scan();
         }
-        Some(("edit", _)) => {
-            Console::edit();
+        Some(("edit", a)) => {
+            Console::edit(a.get_one::<String>("file").unwrap().as_str())
+                .expect("failed to edit file");
         }
         _ => {
             println!("No valid subcommand was used. Use --help for more information.");

@@ -197,45 +197,43 @@ pub fn scan() {
         .build();
 
     let mut databases: Vec<HashMap<String, String>> = Vec::new();
-    for result in scanner {
-        if let Ok(entry) = result {
-            let path = entry.path();
-            if path.is_dir() && path.ends_with("front/web") {
-                let conf: RocketToml = toml::from_str(
-                    read_to_string("Rocket.toml")
-                        .expect("Failed to read Rocket.toml")
-                        .as_str(),
-                )
-                .expect("Failed to parse Rocket.toml");
-                let current = path.join(".running");
-                if current.exists() {
-                    databases.push({
-                        let mut map = HashMap::new();
-                        map.insert(
-                            path.display()
-                                .to_string()
-                                .replace("/front/web", "")
-                                .replace(&home, "~"),
-                            match &conf.default {
-                                Some(profile) => {
-                                    format!("Yes (http://{}:{})", profile.address, profile.port)
-                                }
-                                None => "Yes (unknown address)".to_string(),
-                            },
-                        );
-                        map
-                    });
-                } else {
+    for entry in scanner.flatten() {
+        let path = entry.path();
+        if path.is_dir() && path.ends_with("front/web") {
+            let conf: RocketToml = toml::from_str(
+                read_to_string("Rocket.toml")
+                    .expect("Failed to read Rocket.toml")
+                    .as_str(),
+            )
+            .expect("Failed to parse Rocket.toml");
+            let current = path.join(".running");
+            if current.exists() {
+                databases.push({
                     let mut map = HashMap::new();
                     map.insert(
                         path.display()
                             .to_string()
                             .replace("/front/web", "")
                             .replace(&home, "~"),
-                        "No".to_string(),
+                        match &conf.default {
+                            Some(profile) => {
+                                format!("Yes (http://{}:{})", profile.address, profile.port)
+                            }
+                            None => "Yes (unknown address)".to_string(),
+                        },
                     );
-                    databases.push(map);
-                }
+                    map
+                });
+            } else {
+                let mut map = HashMap::new();
+                map.insert(
+                    path.display()
+                        .to_string()
+                        .replace("/front/web", "")
+                        .replace(&home, "~"),
+                    "No".to_string(),
+                );
+                databases.push(map);
             }
         }
     }
@@ -384,7 +382,7 @@ pub fn init() -> Result<(), std::io::Error> {
         "Initializing typescript project...",
         false,
         std::process::Command::new("tsc")
-            .args(&[
+            .args([
                 "--init",
                 "--target",
                 "ES2020",
@@ -421,7 +419,7 @@ pub fn init() -> Result<(), std::io::Error> {
         false,
         std::process::Command::new("cargo")
             .arg("add")
-            .args(&["rocket_dyn_templates"])
+            .args(["rocket_dyn_templates"])
             .arg("--features")
             .arg("tera")
             .stdout(Stdio::null())
@@ -432,7 +430,7 @@ pub fn init() -> Result<(), std::io::Error> {
         false,
         std::process::Command::new("cargo")
             .arg("add")
-            .args(&["rocket"])
+            .args(["rocket"])
             .arg("--features")
             .arg("secrets,tls,json")
             .stdout(Stdio::null())
@@ -443,7 +441,7 @@ pub fn init() -> Result<(), std::io::Error> {
         false,
         std::process::Command::new("cargo")
             .arg("add")
-            .args(&["serde"])
+            .args(["serde"])
             .arg("--features")
             .arg("derive")
             .stdout(Stdio::null())
@@ -454,7 +452,7 @@ pub fn init() -> Result<(), std::io::Error> {
         false,
         std::process::Command::new("cargo")
             .arg("add")
-            .args(&["serde_json"])
+            .args(["serde_json"])
             .arg("derive")
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
@@ -550,7 +548,7 @@ pub fn test_admin_path(name: &str) -> String {
 }
 
 pub fn init_web_if_not_initialized() {
-    if is_initialized() == false {
+    if !is_initialized() {
         init_web_only().unwrap();
     }
 }
@@ -638,18 +636,14 @@ pub fn list_web() -> Result<Vec<String>, std::io::Error> {
     for entry in entries {
         let entry = entry?;
         let path = entry.path();
-        if path.is_file() {
-            if let Some(ext) = path.extension() {
-                if ext == "tera" {
-                    if let Some(stem) = path.file_stem() {
-                        if let Some(stem_str) = stem.to_str() {
+        if path.is_file()
+            && let Some(ext) = path.extension()
+                && ext == "tera"
+                    && let Some(stem) = path.file_stem()
+                        && let Some(stem_str) = stem.to_str() {
                             let name = stem_str.trim_end_matches(".html");
                             views.push(name.to_string());
                         }
-                    }
-                }
-            }
-        }
     }
     Ok(views)
 }
@@ -785,18 +779,14 @@ pub fn list_admin() -> Result<Vec<String>, std::io::Error> {
     for entry in entries {
         let entry = entry?;
         let path = entry.path();
-        if path.is_file() {
-            if let Some(ext) = path.extension() {
-                if ext == "tera" {
-                    if let Some(stem) = path.file_stem() {
-                        if let Some(stem_str) = stem.to_str() {
+        if path.is_file()
+            && let Some(ext) = path.extension()
+                && ext == "tera"
+                    && let Some(stem) = path.file_stem()
+                        && let Some(stem_str) = stem.to_str() {
                             let name = stem_str.trim_end_matches(".html");
                             views.push(name.to_string());
                         }
-                    }
-                }
-            }
-        }
     }
     Ok(views)
 }

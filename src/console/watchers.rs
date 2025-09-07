@@ -30,11 +30,10 @@ fn is_ignored_dir(path: &Path) -> bool {
 }
 
 fn is_ignored_file(path: &Path) -> bool {
-    if let Some(name) = path.file_name().and_then(|s| s.to_str()) {
-        if name.ends_with('~') || name == "tsconfig.tsbuildinfo" {
+    if let Some(name) = path.file_name().and_then(|s| s.to_str())
+        && (name.ends_with('~') || name == "tsconfig.tsbuildinfo") {
             return true;
         }
-    }
     match path
         .extension()
         .and_then(|s| s.to_str())

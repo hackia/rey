@@ -199,7 +199,8 @@ pub mod render {
             }));
 
             // Exposer assets (roots.css, icons.svg)
-            let rocket = rocket
+            
+            rocket
                 .mount(
                     "/kit",
                     rocket::fs::FileServer::from("target/roots_kit_assets"),
@@ -220,8 +221,7 @@ pub mod render {
                             }
                         }
                     })
-                }));
-            rocket
+                }))
         })
     }
 }

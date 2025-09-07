@@ -1,5 +1,5 @@
 use std::{
-    fs::{File, remove_dir_all, remove_file},
+    fs::{File, read_to_string, remove_dir_all, remove_file},
     path::Path,
 };
 
@@ -49,22 +49,19 @@ impl Console {
         }
     }
 
-    pub fn edit() {
-        use std::fs;
-
-        let config_path = "Rocket.toml";
-        let initial_text = fs::read_to_string(config_path).unwrap_or_default();
-
-        let edited = Editor::new("Edit Rocket.toml configuration")
-            .with_help_message(
-                "Edit the Rocket.toml configuration file. Save and exit to apply changes.",
-            )
-            .with_predefined_text(&initial_text)
+    pub fn edit(file: &str) -> Result<(), std::io::Error> {
+        Editor::new(format!("Editing {file}").as_str())
+            .with_help_message("Press Ctrl+S to save and Ctrl+C to cancel")
+            .with_predefined_text(read_to_string(file).unwrap_or_default().as_str())
             .prompt()
-            .expect("failed to edit Rocket.toml");
-
-        fs::write(config_path, edited).expect("failed to write Rocket.toml");
-        ok_clear("Rocket.toml updated successfully!", false);
+            .map(|content| {
+                std::fs::write(file, content).expect("failed to write to file");
+                ok_clear(format!("{} updated successfully!", file).as_str(), false);
+            })
+            .unwrap_or_else(|_| {
+                ok_clear(format!("Editing {} cancelled", file).as_str(), false);
+            });
+        Ok(())
     }
 
     pub fn clean() {

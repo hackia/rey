@@ -186,7 +186,7 @@ impl Licenses {
                 Ok(())
             } else {
                 ok_clear("Failed to download license file.", false);
-                return Err(Error::other("Failed to download license file."));
+                Err(Error::other("Failed to download license file."))
             }
         } else {
             ok_clear("No license selected.", false);

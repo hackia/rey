@@ -46,7 +46,7 @@ pub fn img_srcset(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Val
                 "/public/{} {}w",
                 path.replace(
                     '.',
-                    &format!(".{}.{}", w, path.split('.').last().unwrap_or("jpg"))
+                    &format!(".{}.{}", w, path.split('.').next_back().unwrap_or("jpg"))
                 ),
                 w
             )

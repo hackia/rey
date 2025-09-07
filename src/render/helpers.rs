@@ -94,7 +94,7 @@ pub fn paginate(args: &HashMap<String, Value>) -> tera::Result<Value> {
     let total = args.get("total").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
     let page = args.get("page").and_then(|v| v.as_u64()).unwrap_or(1) as usize;
     let per = args.get("per").and_then(|v| v.as_u64()).unwrap_or(20) as usize;
-    let pages = (total + per - 1) / per;
+    let pages = total.div_ceil(per);
     let has_prev = page > 1;
     let has_next = page < pages.max(1);
     Ok(to_value(
