@@ -279,7 +279,7 @@ fn index() -> Template {
 
 #[get("/ping")]
 fn ping() -> Json<PingResponse<'static>> {
-    Json(PingResponse { status: "ok", app: "picsou" })
+    Json(PingResponse { status: "ok", app: "rey" })
 }
 
 #[catch(404)]
@@ -314,12 +314,12 @@ async fn main() -> Result<(), rocket::Error> {
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="/public/web.css" type="text/css"/>
+    <link rel="stylesheet" href="/public/css/web.css" type="text/css"/>
   </head>
   <body>
     <h1>{{ title }}</h1>
     <p>{{ message }}</p>
-    <script type="module" src="/public/web.js"></script>
+    <script type="module" src="/public/js/web.js"></script>
   </body>
 </html>
 "#,
