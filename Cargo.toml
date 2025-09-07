@@ -35,3 +35,4 @@ inquire = { version = "0.7.5", features = ["console", "date", "editor"] }
 crossterm = "0.29.0"
 tabled = "0.20.0"
 clap = "4.5.47"
+ignore = "0.4.23"

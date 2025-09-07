@@ -26,6 +26,63 @@ pub const ASSETS_EXT: &str = "scss";
 pub const SCRIPTS_EXT: &str = "ts";
 pub const TESTS_EXT: &str = ".tests.ts";
 
+pub enum ViewType {
+    Web,
+    Admin,
+}
+
+pub fn generate_scss_and_ts_base(view: ViewType) -> Result<(), std::io::Error> {
+    let dir = match view {
+        ViewType::Web => "web",
+        ViewType::Admin => "admin",
+    };
+
+    let filename = match view {
+        ViewType::Web => "web.scss",
+        ViewType::Admin => "admin.scss",
+    };
+    let mut main_scss = File::create(format!("./front/{dir}/scss/{filename}"))?;
+    let mut main_ts = File::create(format!("./front/{dir}/ts/index.ts"))?;
+    main_scss.write_all(b"@import './_simba.scss';\n")?;
+    main_scss.sync_all()?;
+    main_ts.write_all(b"console.log('Hello, Simba!');\n")?;
+    main_ts.sync_all()?;
+    Ok(())
+}
+
+pub fn scan() {
+    let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
+    let scanner = ignore::WalkBuilder::new(&home)
+        .hidden(false)
+        .ignore(false)
+        .git_ignore(false)
+        .git_exclude(false)
+        .parents(false)
+        .build();
+    let mut databases: Vec<String> = Vec::new();
+    for result in scanner {
+        if let Ok(entry) = result {
+            let path = entry.path();
+            if path.is_dir() && path.ends_with("front/web") {
+                databases.push(
+                    path.display()
+                        .to_string()
+                        .replace("/front/web", "")
+                        .replace(&home, "~"),
+                );
+            }
+        }
+    }
+    databases.sort();
+    let mut builder = Builder::new();
+    builder.push_record(["Rey Projects Found"]);
+    for db in databases {
+        builder.push_record([db]);
+    }
+    let mut table = builder.build();
+    table.with(Style::modern());
+    println!("{}", table);
+}
 pub fn init() -> Result<(), std::io::Error> {
     ok_clear("Initializing project...", true);
     create_dir_all(WEB_MAIN)?;
@@ -42,8 +99,17 @@ pub fn init() -> Result<(), std::io::Error> {
     create_dir_all(TESTS_E2E)?;
     create_dir_all(TESTS_UNIT)?;
     create_dir_all(TESTS_BENCHMARK)?;
+    create_dir_all("static")?;
+    create_dir_all("static/css")?;
+    create_dir_all("static/js")?;
+    create_dir_all("static/img")?;
+    create_dir_all("static/fonts")?;
+    create_dir_all("logs")?;
+    generate_scss_and_ts_base(ViewType::Web)?;
+    generate_scss_and_ts_base(ViewType::Admin)?;
 
     let mut rocket_toml = File::create("Rocket.toml")?;
+
     let mut hgignore = File::create(".hgignore")?;
 
     hgignore.write_all(b"syntax: glob\n/target\n/node_modules\n/front/web/node_modules\n/front/admin/node_modules\n.DS_Store\n")?;

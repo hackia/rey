@@ -1,4 +1,7 @@
-use std::fs::{remove_dir_all, remove_file};
+use std::{
+    fs::{remove_dir_all, remove_file},
+    path::Path,
+};
 
 use crate::console::{
     prompts::Question,
@@ -6,7 +9,7 @@ use crate::console::{
         admin::{ok_clear, ok_command},
         web::{
             generate_admin, generate_admin_view, generate_web, generate_web_view, init_all,
-            is_initialized,
+            is_initialized, scan,
         },
     },
 };
@@ -17,6 +20,11 @@ pub mod views;
 pub struct Console;
 
 impl Console {
+    pub fn scan() {
+        ok_clear("Scanning for rey projects...", false);
+        scan();
+        ok_clear("Scan complete!", false);
+    }
     pub fn init() {
         if is_initialized() {
             ok_clear("Project is already initialized.", false);
@@ -48,55 +56,58 @@ impl Console {
         .expect("failed to get confirmation")
         {
             ok_clear("removing existing project files...", false);
-            if std::path::Path::new("front/").exists() {
+            if Path::new("logs/").exists() {
+                remove_dir_all("logs/").expect("failed to remove logs directory");
+            }
+            if Path::new("front/").exists() {
                 remove_dir_all("front/").expect("failed to remove front directory");
             }
-            if std::path::Path::new("templates/").exists() {
+            if Path::new("templates/").exists() {
                 remove_dir_all("templates/").expect("failed to remove templates directory");
             }
-            if std::path::Path::new("src/").exists() {
+            if Path::new("src/").exists() {
                 remove_dir_all("src/").expect("failed to remove src directory");
             }
-            if std::path::Path::new("Cargo.toml").exists() {
+            if Path::new("Cargo.toml").exists() {
                 remove_file("Cargo.toml").expect("failed to remove Cargo.toml");
             }
-            if std::path::Path::new("Rocket.toml").exists() {
+            if Path::new("Rocket.toml").exists() {
                 remove_file("Rocket.toml").expect("failed to remove Rocket.toml");
             }
-            if std::path::Path::new(".hgignore").exists() {
+            if Path::new(".hgignore").exists() {
                 remove_file(".hgignore").expect("failed to remove .hgignore");
             }
-            if std::path::Path::new("README.md").exists() {
+            if Path::new("README.md").exists() {
                 remove_file("README.md").expect("failed to remove README.md");
             }
-            if std::path::Path::new("LICENSE").exists() {
+            if Path::new("LICENSE").exists() {
                 remove_file("LICENSE").expect("failed to remove LICENSE");
             }
-            if std::path::Path::new("tsconfig.json").exists() {
+            if Path::new("tsconfig.json").exists() {
                 remove_file("tsconfig.json").expect("failed to remove tsconfig.json");
             }
-            if std::path::Path::new("package.json").exists() {
+            if Path::new("package.json").exists() {
                 remove_file("package.json").expect("failed to remove package.json");
             }
-            if std::path::Path::new("tests/").exists() {
+            if Path::new("tests/").exists() {
                 remove_dir_all("tests/").expect("failed to remove tests directory");
             }
-            if std::path::Path::new("static/").exists() {
+            if Path::new("static/").exists() {
                 remove_dir_all("static/").expect("failed to remove static directory");
             }
-            if std::path::Path::new("target/").exists() {
+            if Path::new("target/").exists() {
                 remove_dir_all("target/").expect("failed to remove target directory");
             }
-            if std::path::Path::new("Cargo.lock").exists() {
+            if Path::new("Cargo.lock").exists() {
                 remove_file("Cargo.lock").expect("failed to remove Cargo.lock");
             }
-            if std::path::Path::new("node_modules/").exists() {
+            if Path::new("node_modules/").exists() {
                 remove_dir_all("node_modules/").expect("failed to remove node_modules directory");
             }
-            if std::path::Path::new("yarn.lock").exists() {
+            if Path::new("yarn.lock").exists() {
                 remove_file("yarn.lock").expect("failed to remove yarn.lock");
             }
-            if std::path::Path::new("pnpm-lock.yaml").exists() {
+            if Path::new("pnpm-lock.yaml").exists() {
                 remove_file("pnpm-lock.yaml").expect("failed to remove pnpm-lock.yaml");
             }
             ok_clear("existing project files removed!", false);

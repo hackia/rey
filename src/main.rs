@@ -12,6 +12,7 @@ fn rey() -> ArgMatches {
         .subcommand(Command::new("init").about("Initialize the project"))
         .subcommand(Command::new("serve").about("Serve the project"))
         .subcommand(Command::new("watch").about("Watch the project"))
+        .subcommand(Command::new("scan").about("Scan rey projects"))
         .get_matches()
 }
 fn main() {
@@ -29,8 +30,11 @@ fn main() {
         Some(("watch", _)) => {
             Console::watch();
         }
+        Some(("scan", _)) => {
+            Console::scan();
+        }
         _ => {
-            println!("No valid subcommand was used. Use --help for more information."); 
+            println!("No valid subcommand was used. Use --help for more information.");
         }
     }
 }

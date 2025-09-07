@@ -2670,6 +2670,7 @@ dependencies = [
  "crossterm 0.29.0",
  "emoji",
  "features",
+ "ignore",
  "inquire",
  "once_cell",
  "reqwest",
