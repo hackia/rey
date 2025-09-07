@@ -1,4 +1,7 @@
-use crate::console::{Console, ok_clear, views::admin::ok_command};
+use crate::console::{
+    console::Capsule,
+    views::admin::{ok_clear, ok_command},
+};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::{
@@ -117,7 +120,7 @@ pub fn watch() -> Result<(), Box<dyn std::error::Error>> {
             true,
         );
 
-        Console::compile(["ts", "scss", "rs"]);
+        Capsule::compile(["ts", "scss", "rs"]);
         if let Some(mut c) = child.take() {
             if let Err(e) = c.kill() {
                 eprintln!("Failed to kill child: {e}");

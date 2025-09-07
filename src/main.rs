@@ -1,61 +1,29 @@
-use clap::{Arg, ArgMatches, Command, builder::PossibleValuesParser};
-use rey::console::Console;
-
+use clap::{Parser, command};
+use rey::console::{Commands, Shell};
 pub mod console;
 
-fn rey() -> ArgMatches {
-    Command::new("rey")
-        .version("0.1.0")
-        .author("Seido <seido@hackiado.com>")
-        .about("about")
-        .subcommand(Command::new("clean").about("Clean the project"))
-        .subcommand(Command::new("init").about("Initialize the project"))
-        .subcommand(Command::new("serve").about("Serve the project"))
-        .subcommand(Command::new("watch").about("Watch the project"))
-        .subcommand(Command::new("scan").about("Scan rey projects"))
-        .subcommand(
-            Command::new("edit").about("Edit Rocket.toml config").arg(
-                Arg::new("file")
-                    .help("File to edit")
-                    .long("if")
-                    .short('f')
-                    .value_parser(PossibleValuesParser::new([
-                        "Rocket.toml",
-                        "Cargo.toml",
-                        "package.json",
-                        "tsconfig.json",
-                    ]))
-                    .default_missing_value("Rocket.toml")
-                    .default_value("Rocket.toml")
-                    .required(false),
-            ),
-        )
-        .get_matches()
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
 }
-fn main() {
-    let matches = rey();
-    match matches.subcommand() {
-        Some(("clean", _sub_m)) => {
-            Console::clean();
-        }
-        Some(("init", _)) => {
-            Console::init();
-        }
-        Some(("serve", _)) => {
-            Console::serve();
-        }
-        Some(("watch", _)) => {
-            Console::watch().expect("Failed to watch files");
-        }
-        Some(("scan", _)) => {
-            Console::scan();
-        }
-        Some(("edit", a)) => {
-            Console::edit(a.get_one::<String>("file").unwrap().as_str())
-                .expect("failed to edit file");
-        }
-        _ => {
-            println!("No valid subcommand was used. Use --help for more information.");
+impl Shell for Cli {
+    fn run(&self) {
+        match &self.command {
+            Commands::Clean(cmd) => cmd.run(),
+            Commands::Edit(cmd) => cmd.run(),
+            Commands::Init(cmd) => cmd.run(),
+            Commands::Run(cmd) => cmd.run(),
+            Commands::Scan(cmd) => cmd.run(),
+            Commands::Watch(cmd) => cmd.run(),
+            Commands::Serve(cmd) => cmd.run(),
         }
     }
+}
+
+fn main() {
+    let cli: Cli = Cli::parse();
+
+    cli.run();
 }

@@ -1,0 +1,2 @@
+[scripts]
+lint = "cargo clippy -- clippy:all -D warnings"

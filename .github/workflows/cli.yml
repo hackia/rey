@@ -1,0 +1,44 @@
+# Nom du workflow qui s'affichera dans l'onglet "Actions" de GitHub
+name: Rust Check & Lint
+
+# Déclencheurs : quand lancer ce workflow ?
+on:
+  # Se déclenche quand on pousse du code
+  push:
+    # Uniquement sur ces branches
+    branches:
+      - main
+      - develop
+
+# Les "jobs" (tâches) à exécuter
+jobs:
+  # On définit un seul job qu'on nomme "check-and-lint"
+  check-and-lint:
+    # La machine sur laquelle le job va tourner (un serveur Ubuntu fourni par GitHub)
+    runs-on: ubuntu-latest
+
+    # Les étapes (steps) à exécuter séquentiellement
+    steps:
+      # Étape 1 : Récupérer le code de ton dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Étape 2 : Installer la toolchain Rust (stable)
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      # Étape 3 : Mettre en cache les dépendances pour accélérer les futurs builds
+      - name: Cache cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      # Étape 4 : Lancer le script de linting
+      - name: Run linter script
+        run: cargo run -- run lint
