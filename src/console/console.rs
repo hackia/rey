@@ -179,7 +179,9 @@ impl Capsule {
         ok_command(
             "serving the site...",
             true,
-            std::process::Command::new("cargo").arg("run"),
+            std::process::Command::new("cargo-watch")
+                .arg("-x")
+                .arg("run"),
         );
     }
 
