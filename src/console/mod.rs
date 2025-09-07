@@ -134,7 +134,7 @@ impl Console {
                 false,
                 std::process::Command::new("npx")
                     .arg("sass")
-                    .arg("src/assets/scss:public/assets/css")
+                    .arg("front/scss:static/css")
                     .arg("--style=compressed"),
             );
             ok_clear("scss compiled successfully!", false);
