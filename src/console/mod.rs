@@ -1,5 +1,5 @@
 use std::{
-    fs::{remove_dir_all, remove_file},
+    fs::{File, remove_dir_all, remove_file},
     path::Path,
 };
 
@@ -92,8 +92,8 @@ impl Console {
             if Path::new("tests/").exists() {
                 remove_dir_all("tests/").expect("failed to remove tests directory");
             }
-            if Path::new("static/").exists() {
-                remove_dir_all("static/").expect("failed to remove static directory");
+            if Path::new("public/").exists() {
+                remove_dir_all("public/").expect("failed to remove public directory");
             }
             if Path::new("target/").exists() {
                 remove_dir_all("target/").expect("failed to remove target directory");
@@ -116,6 +116,19 @@ impl Console {
         }
     }
 
+    fn update_running() {
+        if Path::new("front/web/.running").exists() {
+            ok_clear("Cleaning previous build...", false);
+            remove_file("front/web/.running").expect("failed to remove .running file");
+            remove_file("front/admin/.running").expect("failed to remove .running file");
+            ok_clear("Previous build cleaned!", false);
+        } else {
+            ok_clear("No previous build found.", false);
+            File::create("front/web/.running").expect("failed to create .running file");
+            File::create("front/admin/.running").expect("failed to create .running file");
+            ok_clear(".running file created!", false);
+        }
+    }
     /// Create a web view
     pub fn create_web_view() {
         println!("Creating a web view...");
@@ -141,8 +154,16 @@ impl Console {
 
     pub fn serve() {
         ok_clear("Serving the site locally...", true);
+        if !is_initialized() {
+            ok_clear(
+                "Project is not initialized. Please run 'rey init' first.",
+                false,
+            );
+            return;
+        }
+        Console::update_running();
         ok_command(
-            "compiling",
+            "serving the site...",
             true,
             std::process::Command::new("cargo").arg("run"),
         );
@@ -168,24 +189,31 @@ impl Console {
         }
         if extensions.contains(&"scss") {
             ok_command(
-                "compiling scss",
+                "compiling web scss",
                 false,
                 std::process::Command::new("npx")
                     .arg("sass")
-                    .arg("front/scss:static/css")
+                    .arg("front/web/scss/web.scss:public/css/web.css")
+                    .arg("--style=compressed"),
+            );
+            ok_command(
+                "compiling admin scss",
+                false,
+                std::process::Command::new("npx")
+                    .arg("sass")
+                    .arg("front/admin/scss/admin.scss:public/css/admin.css")
                     .arg("--style=compressed"),
             );
             ok_clear("scss compiled successfully!", false);
         }
+
         if extensions.contains(&"rs") {
             ok_command(
-                "compiling rust",
+                "checking rust code",
                 false,
-                std::process::Command::new("cargo-watch")
-                    .arg("-x")
-                    .arg("run"),
+                std::process::Command::new("cargo").arg("clippy"),
             );
-            ok_clear("rust compiled successfully!", false);
+            ok_clear("rust code checked successfully!", false);
         }
     }
 

@@ -137,7 +137,7 @@ impl Seo {
 /// Module `render` provides functionality for integrating Tera templates with Rocket,
 /// including custom filters and functions, as well as handling embedded assets using RustEmbed.
 /// It sets up the templating engine, registers various utilities for content rendering,
-/// and ensures that static assets are served correctly.
+/// and ensures that public assets are served correctly.
 ///     
 pub mod render {
     use rocket::fairing::AdHoc;

@@ -3,7 +3,7 @@ use rocket_dyn_templates::tera;
 use std::{collections::HashMap, fs};
 
 static MANIFEST: Lazy<HashMap<String, String>> = Lazy::new(|| {
-    fs::read_to_string("public/static/manifest.json")
+    fs::read_to_string("public/public/manifest.json")
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok())
         .unwrap_or_default()
@@ -18,7 +18,7 @@ pub fn asset(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
         .get(path)
         .cloned()
         .unwrap_or_else(|| path.to_string());
-    Ok(tera::to_value(format!("/static/{}", mapped)).unwrap())
+    Ok(tera::to_value(format!("/public/{}", mapped)).unwrap())
 }
 
 pub fn asset_tag(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Value> {
@@ -43,7 +43,7 @@ pub fn img_srcset(args: &HashMap<String, tera::Value>) -> tera::Result<tera::Val
         .into_iter()
         .map(|w| {
             format!(
-                "/static/{} {}w",
+                "/public/{} {}w",
                 path.replace(
                     '.',
                     &format!(".{}.{}", w, path.split('.').last().unwrap_or("jpg"))
