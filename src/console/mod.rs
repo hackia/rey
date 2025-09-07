@@ -8,10 +8,10 @@ use crate::console::{
     views::{
         admin::{ok_clear, ok_command},
         web::{
-            generate_admin,
-            generate_admin_view, generate_web, generate_web_view, init_all, is_initialized, scan,
+            generate_admin, generate_admin_view, generate_web, generate_web_view, init_all,
+            is_initialized, scan,
         },
-    }, watchers::watch,
+    },
 };
 
 pub mod prompts;
@@ -116,18 +116,17 @@ impl Console {
         }
     }
 
-    fn update_running() {
+    pub fn update_running() {
         if Path::new("front/web/.running").exists() {
             ok_clear("Cleaning previous build...", false);
             remove_file("front/web/.running").expect("failed to remove .running file");
             remove_file("front/admin/.running").expect("failed to remove .running file");
             ok_clear("Previous build cleaned!", false);
-        } else {
-            ok_clear("No previous build found.", false);
-            File::create("front/web/.running").expect("failed to create .running file");
-            File::create("front/admin/.running").expect("failed to create .running file");
-            ok_clear(".running file created!", false);
         }
+        ok_clear("No previous build found.", false);
+        File::create("front/web/.running").expect("failed to create .running file");
+        File::create("front/admin/.running").expect("failed to create .running file");
+        ok_clear(".running file created!", false);
     }
     /// Create a web view
     pub fn create_web_view() {
@@ -170,7 +169,8 @@ impl Console {
     }
 
     pub fn watch() -> anyhow::Result<()> {
-        watch().expect("msg");
+        Console::update_running();
+        watchers::watch().expect("failed to watch for changes");
         Ok(())
     }
 

@@ -58,7 +58,7 @@ fn is_watched_source(path: &Path) -> bool {
 
 pub fn watch() -> Result<(), Box<dyn std::error::Error>> {
     ok_clear("Watching changes...", true);
-
+    
     let mut child = Some(spawn_server());
     let mut last_restart = Instant::now() - Duration::from_secs(10);
 
