@@ -69,7 +69,7 @@ pub fn ok_command(message: &str, clear: bool, command: &mut std::process::Comman
     {
         ok_clear(message, false);
     } else {
-        panic!("Command failed");
+        panic!("Command failed to execute successfully");
     }
 }
 

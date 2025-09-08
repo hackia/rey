@@ -12,9 +12,8 @@ use crate::console::{
 use anyhow::Ok;
 use inquire::Editor;
 use std::{
-    fs::{File, read_to_string, remove_dir_all, remove_file},
+    fs::{File, create_dir_all, read_to_string, remove_dir_all, remove_file},
     path::Path,
-    process::Command,
 };
 
 pub struct Capsule;
@@ -257,11 +256,7 @@ impl Capsule {
     }
 
     pub fn init_project(proj: &str) -> anyhow::Result<()> {
-        ok_command(
-            "Generating project structure...",
-            true,
-            Command::new("cargo").args(["init", "--name", proj, "--bin", "--vcs", "hg", proj]),
-        );
+        create_dir_all(proj)?;
         init(&proj).expect("failed to initialize project structure");
         ok_clear("Project structure generated!", false);
         Ok(())

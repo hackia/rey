@@ -344,7 +344,6 @@ async fn main() -> Result<(), rocket::Error> {
 use std::path::MAIN_SEPARATOR_STR;
 pub fn init(proj: &str) -> Result<(), std::io::Error> {
     ok_clear("Initializing project...", true);
-
     create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{WEB_MAIN}"))?;
     create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{ADMIN_MAIN}"))?;
     create_dir_all(format!("{proj}{MAIN_SEPARATOR_STR}{WEB_TEMPLATES}"))?;
@@ -467,8 +466,6 @@ pub fn init(proj: &str) -> Result<(), std::io::Error> {
         std::process::Command::new("cargo")
             .arg("add")
             .arg("serde_json")
-            .arg("--features")
-            .arg("derive")
             .current_dir(proj)
             .stdout(Stdio::null())
             .stderr(Stdio::null()),
